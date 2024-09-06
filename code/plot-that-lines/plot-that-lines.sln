@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34622.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "plot-that-lines", "plot-that-lines\plot-that-lines.csproj", "{AB106096-8717-4931-8C03-3B1B0F249803}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB106096-8717-4931-8C03-3B1B0F249803}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB106096-8717-4931-8C03-3B1B0F249803}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB106096-8717-4931-8C03-3B1B0F249803}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB106096-8717-4931-8C03-3B1B0F249803}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C5281AEF-DD00-4504-85B0-6969BFBAD2A6}
+	EndGlobalSection
+EndGlobal
