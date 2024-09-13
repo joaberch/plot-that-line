@@ -34,7 +34,7 @@ namespace plot_that_lines
             //Form2
             this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1000, 600);
             this.Text = headerTitle;
 
             //ScottPlott
@@ -44,7 +44,7 @@ namespace plot_that_lines
                 DisplayScale = 10000,
                 Location = new Point(100, 50),
                 Name = headerTitle,
-                Size = new Size(600, 300),
+                Size = new Size(800, 400),
                 TabIndex = 0,
             };
             ResumeLayout(false);
@@ -89,21 +89,13 @@ namespace plot_that_lines
                 }
             }
 
-            formsPlot.Plot.Add.Scatter(xPos, yPos);
-
-            //title
-            Label title = new Label();
-            title.AutoSize = true;
-            title.Font = new Font("Segoe UI", 24F);
-            title.Location = new Point(275, 5);
-            title.Name = "Titre";
-            title.Size = new Size(215, 45);
-            title.TabIndex = 2;
-            title.Text = headerTitle;
+            formsPlot.Plot.Add.ScatterLine(xPos, yPos);
+            formsPlot.Plot.XLabel("Année");
+            formsPlot.Plot.YLabel("Dépense militaire (selon unités de devises locales)");
+            formsPlot.Plot.Title(headerTitle);
 
             //add to forms
             Controls.Add(formsPlot);
-            Controls.Add(title);
         }
 
         #endregion
