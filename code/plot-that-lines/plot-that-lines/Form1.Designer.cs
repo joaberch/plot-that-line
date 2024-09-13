@@ -142,7 +142,8 @@ namespace plot_that_lines
 
         private void button_clicked(object sender, EventArgs e)
         {
-            Form2 form2 = new Form2();
+            string[] countryName = sender.ToString().Split("Text: ");
+            Form2 form2 = new Form2(countryName[1]);
             form2.ShowDialog();
         }
 
