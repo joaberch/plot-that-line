@@ -1,4 +1,5 @@
 ﻿using ScottPlot.WinForms;
+using System.Diagnostics;
 
 namespace plot_that_lines
 {
@@ -47,6 +48,48 @@ namespace plot_that_lines
                 TabIndex = 0,
             };
             ResumeLayout(false);
+
+            StreamReader sr = new StreamReader("API_MS.MIL.XPND.CN_DS2_fr_csv_v2_3446916.csv");
+            string line;
+
+            List<double> xPos = new List<double>();
+            List<double> yPos = new List<double>();
+
+            while ((line = sr.ReadLine()) != null)
+            {
+                string[] words = line.Replace("\"", "").Split(",");
+
+                //get yPos
+                if (headerTitle == words[0]) {
+                    for (int i = 0;  i < words.Length-4; i++)
+                    {
+                        try
+                        {
+                            yPos.Add(Convert.ToDouble(words[i + 4]));
+                        } catch {
+                            Debug.WriteLine($"yPos unreadeable : \"{words[i+4]}\"");
+                        }
+                    }
+                }
+
+                //get xPos
+                if (line.Contains("\"Country Name\",\"Country Code\",\"Indicator Name\",\"Indicator Code\""))
+                {
+                    for (int i = 0; i < words.Length - 4; i++)
+                    {
+                        try
+                        {
+                            xPos.Add(Convert.ToDouble(words[i + 4]));
+                        }
+                        catch
+                        {
+                            Debug.WriteLine($"xPos unreadeable : \"{words[i + 4]}\"");
+                        }
+                    }
+                }
+            }
+
+            formsPlot.Plot.Add.Scatter(xPos, yPos);
 
             //title
             Label title = new Label();
