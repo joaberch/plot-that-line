@@ -53,14 +53,7 @@ namespace plot_that_lines
             Titre.Size = new Size(215, 45);
             Titre.TabIndex = 2;
             Titre.Text = "Plot that lines";
-            //
-            // Scrollbar
-            //
-            //VScrollBar vScroller = new VScrollBar();
-            //vScroller.Dock = DockStyle.Right;
-            //vScroller.Width = 30;
-            //vScroller.Height = 200;
-            //vScroller.Name = "VScrollBar1";
+
             //
             // Buttons
             //
@@ -88,9 +81,6 @@ namespace plot_that_lines
                     };
                     myButton.Click += new EventHandler(button_clicked);
 
-                    //Debug.Write(words[0]);
-                    //Debug.WriteLine("   |   calc : " + buttonWidth + "    |   width : " + myButton.Width + "  |   locationX : " + myButton.Location.X);
-
                     if (buttonWidth > 90 && buttonWidth < 159) {
                         //2 case
                         xLocation += 200;
@@ -106,6 +96,7 @@ namespace plot_that_lines
                         myButton.Width = 80;
                     }
 
+                    //Prevent long buttons (2 case or more) to appear on the border
                     if (buttonWidth > 90 && myButton.Location.X > 650)
                     {
                         xLocation = 60;
@@ -113,6 +104,7 @@ namespace plot_that_lines
                         myButton.Location = new Point(xLocation, yLocation);
                     }
 
+                    //New line
                     if (xLocation > 700) {
                         xLocation = 60;
                         yLocation += 30;
@@ -130,7 +122,7 @@ namespace plot_that_lines
             ClientSize = new Size(800, 450);
             Controls.Add(Titre);
             Controls.Add(label1);
-            //Controls.Add(vScroller);
+
             //Add every buttons
             buttons.ForEach(button => { Controls.Add(button); });
 
@@ -146,8 +138,5 @@ namespace plot_that_lines
             Form2 form2 = new Form2(countryName[1]);
             form2.ShowDialog();
         }
-
-        //private Label label1;
-        //private Label Titre;
     }
 }
