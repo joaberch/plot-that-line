@@ -1,4 +1,6 @@
-﻿namespace plot_that_lines
+﻿using ScottPlot.WinForms;
+
+namespace plot_that_lines
 {
     partial class Form2
     {
@@ -28,10 +30,25 @@
         /// </summary>
         private void InitializeComponent(string title)
         {
+            //Form2
             this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Text = title;
+
+            //ScottPlott
+            SuspendLayout();
+            FormsPlot formsPlot = new FormsPlot
+            {
+                //DisplayScale = 10000,
+                Location = new Point(100, 50),
+                Name = title,
+                Size = new Size(600, 300),
+                TabIndex = 0,
+            };
+            ResumeLayout(false);
+
+            Controls.Add(formsPlot);
         }
 
         #endregion
