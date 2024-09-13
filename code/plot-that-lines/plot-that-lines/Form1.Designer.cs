@@ -80,11 +80,13 @@ namespace plot_that_lines
                 {
                     double buttonWidth = 30 + words[0].Length * 5;
 
-                    Button myButton = new Button();
-                    myButton.Location = new Point(xLocation, yLocation);
-                    myButton.Text = words[0];
-                    //myButton.Width = Convert.ToInt32(buttonWidth);
-                    myButton.AutoSize = false;
+                    Button myButton = new Button
+                    {
+                        Location = new Point(xLocation, yLocation),
+                        Text = words[0],
+                        AutoSize = false,
+                    };
+                    myButton.Click += new EventHandler(button_clicked);
 
                     //Debug.Write(words[0]);
                     //Debug.WriteLine("   |   calc : " + buttonWidth + "    |   width : " + myButton.Width + "  |   locationX : " + myButton.Location.X);
@@ -136,6 +138,12 @@ namespace plot_that_lines
             Text = "Form1";
             ResumeLayout(false);
             PerformLayout();
+        }
+
+        private void button_clicked(object sender, EventArgs e)
+        {
+            Form2 form2 = new Form2();
+            form2.ShowDialog();
         }
 
         //private Label label1;
