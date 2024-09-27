@@ -64,14 +64,17 @@ namespace plot_that_lines
             listBox.Width = 500;
             listBox.Height = 300;
             listBox.SelectedIndexChanged += new EventHandler(button_clicked);
+            List<string> alphabeticalOrder = new List<string>();
             while ((line2 = sr2.ReadLine()) != null)
             {
                 string[] words = line2.Replace("\"", "").Split(",");
                 if (words[0] != "Country Name")
                 {
-                    listBox.Items.Add(words[0]);
+                    alphabeticalOrder.Add(words[0]);
                 }
             }
+            alphabeticalOrder.Sort();
+            alphabeticalOrder.ForEach(item => listBox.Items.Add(item));
 
             // 
             // Form1
