@@ -53,66 +53,27 @@ namespace plot_that_lines
             Titre.Size = new Size(215, 45);
             Titre.TabIndex = 2;
             Titre.Text = "Plot that lines";
-
             //
-            // Buttons
+            //ListBox
             //
-            //TODO : use myButton.Width instead of buttonWidth
-            StreamReader sr = new StreamReader("API_MS.MIL.XPND.CN_DS2_fr_csv_v2_3446916.csv");
-            string line;
-            int xLocation = 60;
-            int yLocation = 150;
+            ListBox listBox = new ListBox();
+            StreamReader sr2 = new StreamReader("API_MS.MIL.XPND.CN_DS2_fr_csv_v2_3446916.csv");
+            string line2;
 
-            List<Button> buttons = new List<Button>();
-
-            while ((line = sr.ReadLine()) != null)
+            listBox.Location = new Point(150, 150);
+            listBox.Width = 500;
+            listBox.Height = 300;
+            listBox.SelectedIndexChanged += new EventHandler(button_clicked);
+            while ((line2 = sr2.ReadLine()) != null)
             {
-                string[] words = line.Replace("\"", "").Split(",");
-
-                if (words[0] != "Country Name" && words[0] != "")
+                string[] words = line2.Replace("\"", "").Split(",");
+                if (words[0] != "Country Name")
                 {
-                    double buttonWidth = 30 + words[0].Length * 5;
-
-                    Button myButton = new Button
-                    {
-                        Location = new Point(xLocation, yLocation),
-                        Text = words[0],
-                        AutoSize = false,
-                    };
-                    myButton.Click += new EventHandler(button_clicked);
-
-                    if (buttonWidth > 90 && buttonWidth < 159) {
-                        //2 case
-                        xLocation += 200;
-                        myButton.Width = 180;
-                    } else if (buttonWidth >= 160)
-                    {
-                        //3 case
-                        xLocation += 300;
-                        myButton.Width = 280;
-                    } else {
-                        //1 case
-                        xLocation += 100;
-                        myButton.Width = 80;
-                    }
-
-                    //Prevent long buttons (2 case or more) to appear on the border
-                    if (buttonWidth > 90 && myButton.Location.X > 650)
-                    {
-                        xLocation = 60;
-                        yLocation += 30;
-                        myButton.Location = new Point(xLocation, yLocation);
-                    }
-
-                    //New line
-                    if (xLocation > 700) {
-                        xLocation = 60;
-                        yLocation += 30;
-                    }
-
-                    buttons.Add(myButton);
+                    Debug.WriteLine(words[0]);
+                    listBox.Items.Add(words[0]);
                 }
             }
+
             // 
             // Form1
             // 
@@ -121,22 +82,24 @@ namespace plot_that_lines
             AutoScroll = true;
             ClientSize = new Size(800, 450);
             Controls.Add(Titre);
+            Controls.Add(listBox);
             Controls.Add(label1);
 
-            //Add every buttons
-            buttons.ForEach(button => { Controls.Add(button); });
-
-            Name = "Form1";
-            Text = "Form1";
+            Name = "Plot that lines";
+            Text = "Plot that lines";
             ResumeLayout(false);
             PerformLayout();
         }
 
         private void button_clicked(object sender, EventArgs e)
         {
-            string[] countryName = sender.ToString().Split("Text: ");
-            Form2 form2 = new Form2(countryName[1]);
-            form2.ShowDialog();
+            if (sender is ListBox listBox)
+            {
+                string selectedCountry = listBox.SelectedItem.ToString();
+                Debug.WriteLine($"Selected Country: {selectedCountry}");
+                Form2 form2 = new Form2(selectedCountry);
+                form2.ShowDialog();
+            }
         }
     }
 }
