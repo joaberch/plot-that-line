@@ -69,7 +69,6 @@ namespace plot_that_lines
                 string[] words = line2.Replace("\"", "").Split(",");
                 if (words[0] != "Country Name")
                 {
-                    Debug.WriteLine(words[0]);
                     listBox.Items.Add(words[0]);
                 }
             }
@@ -96,7 +95,6 @@ namespace plot_that_lines
             if (sender is ListBox listBox)
             {
                 string selectedCountry = listBox.SelectedItem.ToString();
-                Debug.WriteLine($"Selected Country: {selectedCountry}");
                 Form2 form2 = new Form2(selectedCountry);
                 form2.ShowDialog();
             }
