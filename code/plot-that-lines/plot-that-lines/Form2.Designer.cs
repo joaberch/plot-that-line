@@ -49,7 +49,7 @@ namespace plot_that_lines
             };
             ResumeLayout(false);
 
-            StreamReader sr = new StreamReader("API_MS.MIL.XPND.CN_DS2_fr_csv_v2_3446916.csv");
+            StreamReader sr = new StreamReader("../../../../data/API_MS.MIL.XPND.CN_DS2_fr_csv_v2_3446916.csv");
             string line;
 
             List<double> xPos = new List<double>();
