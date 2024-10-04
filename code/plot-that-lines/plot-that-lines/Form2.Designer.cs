@@ -9,6 +9,7 @@ namespace plot_that_lines
 
         const string FILEPATH = "../../../../data/API_MS.MIL.XPND.CN_DS2_fr_csv_v2_3446916.csv";
         //TODO : automatically get first and last year
+        //TODO : interface
         const int BEGINNINGYEAR = 1960; //year we start collecting data
         const int ENDINGYEAR = 2022;    //year we stop collecting data
 
@@ -86,29 +87,15 @@ namespace plot_that_lines
             };
             endFilter.TextChanged += new EventHandler((sender, e) => ChangeFilter(sender, e, headerTitle));
 
-            AddPoint();
+            (List<double> filteredX, List<double> filteredY) filtered = AddPoint(headerTitle, BEGINNINGYEAR, ENDINGYEAR);
 
-            List<double> xPos = getYearData();
-            List<double> yPos = getCountryXPos(headerTitle, FILEPATH);
-            List<double> filteredXPos = new List<double>();
-            List<double> filteredYPos = new List<double>();
-
-            //var filter = yPos.Zip(xPos).Where(item => item.First != 0);
-            for (int i = 0; i < yPos.Count; i++)
-            {
-                if (yPos[i] != 0)
-                {
-                    filteredXPos.Add(xPos[i]);
-                    filteredYPos.Add(yPos[i]);
-                }
-            }
+            formsPlot.Plot.Add.Scatter(filtered.filteredX, filtered.filteredY);
+            formsPlot.Plot.Axes.SetLimits(filtered.filteredX[0] - 2, filtered.filteredX[filtered.filteredY.Count - 1] + 2);
 
             formsPlot.Name = headerTitle;
-            formsPlot.Plot.Add.Scatter(filteredXPos, filteredYPos);
             formsPlot.Plot.XLabel("Année");
             formsPlot.Plot.YLabel("Dépense militaire (selon unités de devises locales)");
             formsPlot.Plot.Title(headerTitle);
-            formsPlot.Plot.Axes.SetLimits(filteredXPos[0] - 2, filteredXPos[filteredXPos.Count - 1] + 2);
 
             //add to forms
             Controls.Add(formsPlot);
@@ -133,22 +120,9 @@ namespace plot_that_lines
                             beginFilter = year;
                             formsPlot.Plot.Clear();
 
-                            List<double> xPos = getYearData();
-                            List<double> yPos = getCountryXPos(headerTitle, FILEPATH);
-                            List<double> filteredXPos = new List<double>();
-                            List<double> filteredYPos = new List<double>();
+                            (List<double> filteredX, List<double> filteredY) filtered = AddPoint(headerTitle, beginFilter, endFilter);
 
-                            //var filter = yPos.Zip(xPos).Where(item => item.First != 0);
-                            for (int i = 0; i < yPos.Count; i++)
-                            {
-                                if (yPos[i] != 0 && xPos[i] >= beginFilter && xPos[i] <= endFilter)
-                                {
-                                    filteredXPos.Add(xPos[i]);
-                                    filteredYPos.Add(yPos[i]);
-                                }
-                            }
-
-                            formsPlot.Plot.Add.Scatter(filteredXPos, filteredYPos);
+                            formsPlot.Plot.Add.Scatter(filtered.filteredX, filtered.filteredY);
                         }
                         else if (textbox.PlaceholderText.Contains("fin"))
                         {
@@ -187,14 +161,22 @@ namespace plot_that_lines
             formsPlot.Refresh();
         }
 
-        private void AddPoint()
+        private (List<double>, List<double>) AddPoint(string countryName, int beginFilter, int endFilter)
         {
+            List<double> xPos = getYearData();
+            List<double> yPos = getCountryXPos(countryName, FILEPATH);
+            (List<double> filteredXPos, List<double> filteredYPos) filter = new(new List<double>(), new List<double>());
 
-        }
-
-        private void AddPoint(int startYearFilter, int endYearFilter)
-        {
-
+            //var filter = yPos.Zip(xPos).Where(item => item.First != 0);
+            for (int i = 0; i < yPos.Count; i++)
+            {
+                if (yPos[i] != 0 && xPos[i] <= endFilter && xPos[i] >= beginFilter)
+                {
+                    filter.filteredXPos.Add(xPos[i]);
+                    filter.filteredYPos.Add(yPos[i]);
+                }
+            }
+            return filter;
         }
 
         private List<double> getCountryXPos(string name, string path)
@@ -223,7 +205,7 @@ namespace plot_that_lines
             return xPos;
         }
         /// <summary>
-        /// Get the 
+        /// Get every years on the csv
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>

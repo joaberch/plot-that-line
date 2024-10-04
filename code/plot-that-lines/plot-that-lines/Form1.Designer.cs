@@ -5,6 +5,7 @@ namespace plot_that_lines
 {
     partial class Form1
     {
+        const string filePath = "../../../../data/API_MS.MIL.XPND.CN_DS2_fr_csv_v2_3446916.csv";
         /// <summary>
         ///  Required designer variable.
         /// </summary>
@@ -101,9 +102,12 @@ namespace plot_that_lines
 
 		private List<string> GetCountries()
 		{
-            const string filePath = "../../../../data/API_MS.MIL.XPND.CN_DS2_fr_csv_v2_3446916.csv";
-
-			return File.ReadLines(filePath).Skip(1).Select(line => line.Replace("\"", "").Split(",")[0]).OrderBy(country => country).ToList();
+			return File
+                .ReadLines(filePath)
+                .Skip(1)
+                .Select(line => line.Replace("\"", "").Split(",")[0])
+                .OrderBy(country => country)
+                .ToList();
 		}
 	}
 }
