@@ -1,6 +1,7 @@
 ﻿using ScottPlot.WinForms;
 using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace plot_that_lines
 {
@@ -107,57 +108,54 @@ namespace plot_that_lines
 
         private void ChangeFilter(object sender, EventArgs e, string headerTitle)
         {
-            if (sender is TextBox textbox)
+            if (sender is TextBox textbox && textbox.Text.Length > 0)
             {
+                //Change year filter
                 try
                 {
                     int year = Convert.ToInt32(((System.Windows.Forms.TextBox)sender).Text);
-                    if (year >= BEGINNINGYEAR && year <= ENDINGYEAR)
+
+                    textbox.ForeColor = Color.Black;
+                    if (textbox.PlaceholderText.Contains("début"))
                     {
-                        textbox.ForeColor = Color.Black;
-                        if (textbox.PlaceholderText.Contains("début"))
-                        {
-                            beginFilter = year;
-                            formsPlot.Plot.Clear();
-
-                            (List<double> filteredX, List<double> filteredY) filtered = AddPoint(headerTitle, beginFilter, endFilter);
-
-                            formsPlot.Plot.Add.Scatter(filtered.filteredX, filtered.filteredY);
-                        }
-                        else if (textbox.PlaceholderText.Contains("fin"))
-                        {
-                            endFilter = year;
-                            formsPlot.Plot.Clear();
-
-                            List<double> xPos = getYearData();
-                            List<double> yPos = getCountryXPos(headerTitle, FILEPATH);
-                            List<double> filteredXPos = new List<double>();
-                            List<double> filteredYPos = new List<double>();
-
-                            //var filter = yPos.Zip(xPos).Where(item => item.First != 0);
-                            for (int i = 0; i < yPos.Count; i++)
-                            {
-                                if (yPos[i] != 0 && xPos[i] <= endFilter && xPos[i] >= beginFilter)
-                                {
-                                    filteredXPos.Add(xPos[i]);
-                                    filteredYPos.Add(yPos[i]);
-                                }
-                            }
-
-                            formsPlot.Plot.Add.Scatter(filteredXPos, filteredYPos);
-                        }
+                        beginFilter = year;
                     }
-                    else
+                    else if (textbox.PlaceholderText.Contains("fin"))
                     {
-                        Debug.WriteLine($"{year} is off limit");
+                        endFilter = year;
                     }
 
                 }
-                catch
+                catch { }
+                //In case char
+                StringBuilder text = new StringBuilder();
+                foreach (char item in textbox.Text)
                 {
-
-                    textbox.Text = "";
+                    try
+                    {
+                        if (Char.IsDigit(item))
+                            text.Append(item.ToString());
+                    }
+                    catch { }
                 }
+                textbox.Text = text.ToString();
+
+                //Update graph
+                formsPlot.Plot.Clear();
+
+                if (beginFilter < BEGINNINGYEAR)
+                {
+                    beginFilter = BEGINNINGYEAR;
+                }
+                if (endFilter < beginFilter)
+                {
+                    endFilter = ENDINGYEAR;
+                }
+
+                (List<double> filteredX, List<double> filteredY) filtered = AddPoint(headerTitle, beginFilter, endFilter);
+
+                formsPlot.Plot.Add.Scatter(filtered.filteredX, filtered.filteredY);
+
             }
             formsPlot.Refresh();
         }
