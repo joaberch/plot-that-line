@@ -55,7 +55,29 @@ namespace plot_that_lines
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1200, 600);
             this.Text = headerTitle;
-
+            //title
+            Label titre = new Label()
+            {
+                AutoSize = true,
+                Font = new Font("Segoe UI", 24F),
+                Location = new Point(450, 450),
+                Name = "Titre",
+                Size = new Size(215, 45),
+                TabIndex = 2,
+                Text = "Plot that lines",
+            };
+            // label1
+            Label explanation = new Label()
+            {
+                AutoSize = true,
+                Location = new Point(250, 500),
+                Name = "label1",
+                Size = new Size(603, 45),
+                TabIndex = 1,
+                Text = "Bienvenue, cette application permet d'afficher les dépenses militaires de pays dans leurs monnaies respectives.\n" +
+                "Cliquer sur le nom d'un pays pour ouvrir une nouvelle fenêtre avec un graphique des dépenses militaires du pays.\n" +
+                "Dans une fenêtre avec un graphique faites glisser votre souris sur un point pour afficher l'année et les dépenses de l'année.",
+            };
             //Label beginFilter
             Label beginFilterLabel = new Label()
             {
@@ -104,6 +126,8 @@ namespace plot_that_lines
             Controls.Add(beginFilter);
             Controls.Add(endFilterLabel);
             Controls.Add(endFilter);
+            Controls.Add(titre);
+            Controls.Add(explanation);
         }
 
         private void ChangeFilter(object sender, EventArgs e, string headerTitle)
