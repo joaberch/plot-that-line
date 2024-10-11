@@ -235,9 +235,8 @@ namespace plot_that_lines
         private List<double> getYearData()
         {
             List<double> yPos = new List<double>();
-            const string filePath = "../../../../data/API_MS.MIL.XPND.CN_DS2_fr_csv_v2_3446916.csv";
 
-            string[] lines = new List<string>(File.ReadAllLines(filePath)).FirstOrDefault().Split(",");
+            string[] lines = new List<string>(File.ReadAllLines(FILEPATH)).FirstOrDefault().Split(",");
             foreach (var item in lines)
             {
                 try
