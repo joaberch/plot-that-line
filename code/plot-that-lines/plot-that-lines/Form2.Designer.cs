@@ -59,7 +59,7 @@ namespace plot_that_lines
             Label beginFilterLabel = new Label()
             {
                 Name = "beginFilter",
-                Text = "Année de départ",
+                Text = "Année de début",
                 Location = new System.Drawing.Point(900, 100)
             };
             //TextBox beginFilter
@@ -155,6 +155,7 @@ namespace plot_that_lines
                 }
                 catch
                 {
+
                     textbox.Text = "";
                 }
             }
