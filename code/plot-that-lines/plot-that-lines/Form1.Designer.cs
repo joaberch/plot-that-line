@@ -1,19 +1,23 @@
-﻿using ScottPlot.WinForms;
+﻿using Microsoft.VisualBasic.ApplicationServices;
+using ScottPlot.WinForms;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 
 namespace plot_that_lines
 {
-    partial class Form1
-    {
+	partial class Form1
+	{
 		const string FILEPATH = "../../../../data/API_MS.MIL.XPND.CN_DS2_fr_csv_v2_3446916.csv";
 		//TODO : automatically get first and last year
 		//TODO : interface
 		const int BEGINNINGYEAR = 1960; //year we start collecting data
 		const int ENDINGYEAR = 2022;    //year we stop collecting data
 
-        List<string> selectedCountries = new List<string>();
+		List<string> selectedCountries = new List<string>();
+
 		FormsPlot formsPlot;
+		ComboBox comboBox;
 
 		int beginFilter = BEGINNINGYEAR;
 		int endFilter = ENDINGYEAR;
@@ -23,26 +27,26 @@ namespace plot_that_lines
 		/// </summary>
 		private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        ///  Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+		/// <summary>
+		///  Clean up any resources being used.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && (components != null))
+			{
+				components.Dispose();
+			}
+			base.Dispose(disposing);
+		}
 
-        /// <summary>
-        ///  Required method for Designer support - do not modify
-        ///  the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
-        {
-            SuspendLayout();
+		/// <summary>
+		///  Required method for Designer support - do not modify
+		///  the contents of this method with the code editor.
+		/// </summary>
+		private void InitializeComponent()
+		{
+			SuspendLayout();
 			//ScottPlott
 			formsPlot = new FormsPlot
 			{
@@ -53,45 +57,46 @@ namespace plot_that_lines
 			};
 			formsPlot.Plot.XLabel("Année");
 			formsPlot.Plot.YLabel("Dépense militaire");
-            formsPlot.Plot.Title("Aucun pays sélectionné");
-			formsPlot.Plot.Axes.SetLimitsX(BEGINNINGYEAR-5, ENDINGYEAR+5);
+			formsPlot.Plot.Title("Aucun pays sélectionné");
+			formsPlot.Plot.Axes.SetLimitsX(BEGINNINGYEAR - 5, ENDINGYEAR + 5);
 
 			// explanation 
 			Label explanation = new Label()
-            {
-                AutoSize = true,
-                Location = new Point(90, 380),
-                Name = "label1",
-                Size = new Size(603, 45),
-                TabIndex = 1,
-                Text = "Bienvenue, cette application permet d'afficher les dépenses militaires de pays dans leurs monnaies respectives.\n" +
+			{
+				AutoSize = true,
+				Location = new Point(90, 380),
+				Name = "label1",
+				Size = new Size(603, 45),
+				TabIndex = 1,
+				Text = "Bienvenue, cette application permet d'afficher les dépenses militaires de pays dans leurs monnaies respectives.\n" +
 				"Cliquer sur le nom d'un pays pour ouvrir une nouvelle fenêtre avec un graphique des dépenses militaires du pays.\n" +
 				"Dans une fenêtre avec un graphique faites glisser votre souris sur un point pour afficher l'année et les dépenses de l'année.",
-		};
+			};
 
-            // title
-            Label title = new Label()
-            {
-                AutoSize = true,
-                Font = new Font("Segoe UI", 24F),
-                Location = new Point(275, 330),
-                Name = "Titre",
-                Size = new Size(215, 45),
-                TabIndex = 2,
-                Text = "Plot that lines",
-            };
+			// title
+			Label title = new Label()
+			{
+				AutoSize = true,
+				Font = new Font("Segoe UI", 24F),
+				Location = new Point(275, 330),
+				Name = "Titre",
+				Size = new Size(215, 45),
+				TabIndex = 2,
+				Text = "Plot that lines",
+			};
 
-            //ListBox
-            ListBox listBox = new ListBox()
-            {
-                Location = new Point(700, 150),
-                Width = 200,
-                Height = 200,
-            };
+			//ListBox
+			ListBox listBox = new ListBox()
+			{
+				Location = new Point(700, 150),
+				Width = 200,
+				Height = 200,
+			};
 			listBox.SelectedIndexChanged += new EventHandler(button_clicked);
 
-            List<string> countries = GetCountries();
-            countries.ForEach(country => listBox.Items.Add(country));
+			List<string> countries = GetCountries();
+			countries.ForEach(country => listBox.Items.Add(country));
+
 			//Label beginFilter
 			Label beginFilterLabel = new Label()
 			{
@@ -106,7 +111,7 @@ namespace plot_that_lines
 				PlaceholderText = $"Date de début ({BEGINNINGYEAR})",
 				Width = 150,
 			};
-            //beginFilter.TextChanged += new EventHandler();
+			//beginFilter.TextChanged += new EventHandler();
 
 			//Label endFilter
 			Label endFilterLabel = new Label()
@@ -123,28 +128,39 @@ namespace plot_that_lines
 				Width = 150,
 			};
 			//endFilter.TextChanged += new EventHandler((sender, e) => ChangeFilter(sender, e, headerTitle));
+
+			//ComboBox
+			comboBox = new ComboBox()
+			{
+				Location = new System.Drawing.Point(700, 350),
+				DropDownHeight = 300,
+			};
+			List<string> currencies = GetCurrencies();
+			currencies.ForEach(cur => comboBox.Items.Add(cur));
+
 			// Form1
 			AutoScaleDimensions = new SizeF(7F, 15F);
-            AutoScaleMode = AutoScaleMode.Font;
-            AutoScroll = true;
-            ClientSize = new Size(1000, 450);
+			AutoScaleMode = AutoScaleMode.Font;
+			AutoScroll = true;
+			ClientSize = new Size(1000, 450);
 
-            Controls.Add(formsPlot);
-            Controls.Add(title);
-            Controls.Add(listBox);
-            Controls.Add(explanation);
-            Controls.Add(beginFilterLabel);
-            Controls.Add(beginFilter);
-            Controls.Add(endFilterLabel);
-            Controls.Add(endFilter);
+			Controls.Add(formsPlot);
+			Controls.Add(title);
+			Controls.Add(listBox);
+			Controls.Add(explanation);
+			Controls.Add(beginFilterLabel);
+			Controls.Add(beginFilter);
+			Controls.Add(endFilterLabel);
+			Controls.Add(endFilter);
+			Controls.Add(comboBox);
 
-            Name = "Plot that lines";
-            Text = "Plot that lines";
-            ResumeLayout(false);
-            PerformLayout();
-        }
+			Name = "Plot that lines";
+			Text = "Plot that lines";
+			ResumeLayout(false);
+			PerformLayout();
+		}
 
-		private void button_clicked(object sender, EventArgs e)
+		private async void button_clicked(object sender, EventArgs e)
 		{
 			if (sender is not ListBox listBox) return;
 
@@ -177,8 +193,24 @@ namespace plot_that_lines
 			formsPlot.Refresh();
 		}
 
-		private void addPoint(string countryName)
+		private string GetCurrency(string countryName)
 		{
+			foreach (var line in File.ReadLines(FILEPATH))
+			{
+				if (line.Contains(countryName))
+				{
+					var currency = line.Split("\",")[1].Split("\"")[1];
+					return currency;
+				}
+			}
+			return null;
+		}
+
+		private async void addPoint(string countryName)
+		{
+			string inputCurrency = GetCurrency(countryName);
+			string convertToCurrency = comboBox.SelectedItem.ToString();
+
 			List<double> xPos = getYearData();
 			List<double> yPos = getCountryXPos(countryName, FILEPATH, xPos.Count());
 
@@ -186,9 +218,65 @@ namespace plot_that_lines
 				.Where(point => point.Y != 0 && point.X <= endFilter && point.X >= beginFilter)
 				.ToList();
 
+			var test = ConvertCurrency(inputCurrency, convertToCurrency, filteredPoints[0].Y);
+
+			var filteredConvertedPoints = new List<(double X, double Y)>();
+			foreach (var point in filteredPoints)
+			{
+				double? convertedY = await ConvertCurrency(inputCurrency, convertToCurrency, (int)point.Y);
+				if (convertedY.HasValue)
+				{
+					filteredConvertedPoints.Add((point.X, convertedY.Value));
+				}
+			}
+
 			if (filteredPoints.Any())
 			{
-				formsPlot.Plot.Add.Scatter(filteredPoints.Select(p => p.X).ToArray(), filteredPoints.Select(p => p.Y).ToArray());
+				formsPlot.Plot.Add
+					.Scatter(filteredPoints.Select(p => p.X).ToArray(), filteredPoints.Select(p => p.Y)
+					.ToArray());
+			}
+		}
+
+		static async Task<Double?> ConvertCurrency(string inputCurrency, string convertToCurrency, double amount)
+		{
+			string apiKey = "0";
+			StreamReader sr2 = new StreamReader(".env");
+			string line2;
+
+			while ((line2 = sr2.ReadLine()) != null)
+			{
+				if (line2.Contains("APIKEY"))
+				{
+					apiKey = line2.Split("=").Last();
+				}
+			}
+
+			try //TODO : check if need to whitelist the ip address to the api
+			{
+				using var client = new HttpClient();
+				var url = $"https://api.getgeoapi.com/v2/currency/convert?api_key={apiKey}&from={inputCurrency}&to={convertToCurrency}&amount={amount}&format=json";
+
+				var response = await client.GetAsync(url);
+				if (response.IsSuccessStatusCode)
+				{
+					var responseContent = await response.Content.ReadAsStringAsync();
+					Debug.WriteLine($"Response : {responseContent}");
+
+					string key = "rate_for_amount\":\"";
+					var value = Convert.ToDouble(responseContent.Split(key)[1].Split("\"").First().Replace(".", ","));
+
+					return value;
+				}
+				else
+				{
+					return null;
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.ToString());
+				return null;
 			}
 		}
 
@@ -209,7 +297,7 @@ namespace plot_that_lines
 				double maxX = allPoints.Max(point => point.X);
 				double maxY = allPoints.Max(point => point.Y);
 
-				formsPlot.Plot.Axes.SetLimitsX(minX-5, maxX+5);
+				formsPlot.Plot.Axes.SetLimitsX(minX - 5, maxX + 5);
 				formsPlot.Plot.Axes.SetLimitsY(-maxY * 0.1, maxY * 1.4);
 			}
 		}
@@ -263,11 +351,23 @@ namespace plot_that_lines
 		private List<string> GetCountries()
 		{
 			return File
-                .ReadLines(FILEPATH)
-                .Skip(1)
-                .Select(line => line.Replace("\"", "").Split(",")[0])
-                .OrderBy(country => country)
-                .ToList();
+				.ReadLines(FILEPATH)
+				.Skip(1)
+				.Select(line => line.Replace("\"", "").Split(",")[0])
+				.OrderBy(country => country)
+				.ToList();
+		}
+
+		private List<string> GetCurrencies()
+		{
+			return File.ReadLines(FILEPATH)
+				.Skip(1)
+				.Select(line => line.Replace("\"", "").Split(","))
+				.Select(parts => parts[1])
+				.Distinct()
+				.OrderBy(currency => currency)
+				.Where(currency => currency.Length <= 3)
+				.ToList();
 		}
 	}
 }
