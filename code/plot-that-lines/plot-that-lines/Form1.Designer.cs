@@ -143,55 +143,29 @@ namespace plot_that_lines
             PerformLayout();
         }
 
-        private void button_clicked(object sender, EventArgs e)
-        {
-            string countryList = "";
-            string countryToRemove = "";
-            string countryToAdd = "";
-            if (sender is ListBox listBox)
-            {
-                if (selectedCountries.Count > 0)
-                {
-					selectedCountries.ForEach(country =>
-					{
-                        //if country already exist we remove it
-						if (country == listBox.SelectedItem.ToString())
-						{
-                            countryToRemove = listBox.SelectedItem.ToString();
-						}
-						else if (countryToRemove.Length==0) //if country doesn't exist we add it
-						{
-                            countryToAdd = listBox.SelectedItem.ToString();
-						}
-					});
-                    //Remove country
-                    if (countryToRemove.Length>0)
-                    {
-						selectedCountries.Remove(countryToRemove);
-                        countryToRemove = "";
-					}
-                    //Add country
-                    if (countryToAdd.Length>0)
-                    {
-                        selectedCountries.Add(countryToAdd);
-                        countryToAdd = "";
-                    }
-				} else
-                { //If the list is empty, add the country
-                    selectedCountries.Add(listBox.SelectedItem.ToString());
-                }
+		private void button_clicked(object sender, EventArgs e)
+		{
+			if (sender is not ListBox listBox) return;
 
-                //Define title of the graph
-				if (selectedCountries.Count == 0)
-				{
-					countryList = "Aucun pays sélectionné";
-				}
-				selectedCountries.ForEach((country) => { 
-                    countryList = string.Join(", ", selectedCountries);
-				});
-                formsPlot.Plot.Title(countryList);
-                formsPlot.Refresh();
-            }
+			string selectedItem = listBox.SelectedItem.ToString();
+
+			// If the country is already in the list we remove it else we add it
+			List<string> updatedCountries = selectedCountries.Contains(selectedItem)
+				? selectedCountries.Where(country => country != selectedItem).ToList()
+				: selectedCountries.Append(selectedItem).ToList();
+
+			// Mise à jour de la liste des pays sélectionnés
+			selectedCountries.Clear();
+			selectedCountries.AddRange(updatedCountries);
+
+			// Définir le titre du graphique en fonction des pays sélectionnés
+			string countryList = selectedCountries.Count == 0
+				? "Aucun pays sélectionné"
+				: string.Join(", ", selectedCountries);
+
+			// Mise à jour du titre et rafraîchissement du graphique
+			formsPlot.Plot.Title(countryList);
+			formsPlot.Refresh();
 		}
 
 		private List<string> GetCountries()
