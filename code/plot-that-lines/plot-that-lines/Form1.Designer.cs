@@ -54,6 +54,7 @@ namespace plot_that_lines
 			formsPlot.Plot.XLabel("Année");
 			formsPlot.Plot.YLabel("Dépense militaire");
             formsPlot.Plot.Title("Aucun pays sélectionné");
+			formsPlot.Plot.Axes.SetLimitsX(BEGINNINGYEAR-5, ENDINGYEAR+5);
 
 			// explanation 
 			Label explanation = new Label()
@@ -149,23 +150,114 @@ namespace plot_that_lines
 
 			string selectedItem = listBox.SelectedItem.ToString();
 
-			// If the country is already in the list we remove it else we add it
+			// Update selected countries
 			List<string> updatedCountries = selectedCountries.Contains(selectedItem)
 				? selectedCountries.Where(country => country != selectedItem).ToList()
 				: selectedCountries.Append(selectedItem).ToList();
 
-			// Mise à jour de la liste des pays sélectionnés
 			selectedCountries.Clear();
 			selectedCountries.AddRange(updatedCountries);
 
-			// Définir le titre du graphique en fonction des pays sélectionnés
+			// Update title
 			string countryList = selectedCountries.Count == 0
 				? "Aucun pays sélectionné"
 				: string.Join(", ", selectedCountries);
 
-			// Mise à jour du titre et rafraîchissement du graphique
 			formsPlot.Plot.Title(countryList);
+
+			formsPlot.Plot.Clear();
+
+			foreach (var country in selectedCountries)
+			{
+				addPoint(country);
+			}
+
+			//Scale the plot
+			autoScalePlot();
 			formsPlot.Refresh();
+		}
+
+		private void addPoint(string countryName)
+		{
+			List<double> xPos = getYearData();
+			List<double> yPos = getCountryXPos(countryName, FILEPATH, xPos.Count());
+
+			var filteredPoints = xPos.Zip(yPos, (x, y) => new { X = x, Y = y })
+				.Where(point => point.Y != 0 && point.X <= endFilter && point.X >= beginFilter)
+				.ToList();
+
+			if (filteredPoints.Any())
+			{
+				formsPlot.Plot.Add.Scatter(filteredPoints.Select(p => p.X).ToArray(), filteredPoints.Select(p => p.Y).ToArray());
+			}
+		}
+
+		private void autoScalePlot()
+		{
+			var allPoints = selectedCountries.SelectMany(country =>
+			{
+				List<double> xPos = getYearData();
+				List<double> yPos = getCountryXPos(country, FILEPATH, xPos.Count());
+
+				return xPos.Zip(yPos, (x, y) => new { X = x, Y = y })
+							.Where(point => point.Y != 0 && point.X <= endFilter && point.X >= beginFilter);
+			}).ToList();
+
+			if (allPoints.Any())
+			{
+				double minX = allPoints.Min(point => point.X);
+				double maxX = allPoints.Max(point => point.X);
+				double maxY = allPoints.Max(point => point.Y);
+
+				formsPlot.Plot.Axes.SetLimitsX(minX-5, maxX+5);
+				formsPlot.Plot.Axes.SetLimitsY(-maxY * 0.1, maxY * 1.4);
+			}
+		}
+
+		private List<double> getCountryXPos(string name, string path, int length)
+		{
+			List<double> xPos = new List<double>();
+
+			List<string> lines = new List<string>(File.ReadAllLines(path));
+			List<string> selectedLine = new List<string>(lines.Where(line => line.Contains(name)));
+
+			string[] data = selectedLine[0].ToString().Split(",");
+
+			foreach (var item in data)
+			{
+				try
+				{
+					string pos = item.Replace("\\\"", "").Replace("\"", "").Replace(".", ",");
+					//Need to have the same x and y value
+					if (string.IsNullOrEmpty(pos)) { xPos.Add(0); };
+					xPos.Add(Convert.ToDouble(pos));
+				}
+				catch
+				{
+					Debug.WriteLine(item);
+				}
+			}
+			return xPos.Take(length).ToList(); //TODO : 64 length
+		}
+
+		private List<double> getYearData()
+		{
+			List<double> yPos = new List<double>();
+
+			string[] lines = new List<string>(File.ReadAllLines(FILEPATH)).FirstOrDefault().Split(",");
+			foreach (var item in lines)
+			{
+				try
+				{
+					string year = item.Replace("\\\"", "").Replace("\"", "").Replace(".", ",");
+					yPos.Add(Convert.ToDouble(year));
+				}
+				catch
+				{
+					Debug.WriteLine(item);
+				}
+			}
+			return yPos;
 		}
 
 		private List<string> GetCountries()
