@@ -193,7 +193,7 @@ namespace plot_that_lines
 			formsPlot.Refresh();
 		}
 
-		private string GetCurrency(string countryName)
+		public string GetCurrency(string countryName)
 		{
 			foreach (var line in File.ReadLines(FILEPATH))
 			{

@@ -1,4 +1,5 @@
 using plot_that_lines;
+using System.Windows.Forms;
 
 namespace plot_that_lines_test
 {
@@ -35,6 +36,25 @@ namespace plot_that_lines_test
 			Assert.IsNotNull(actualCurrencies, "GetCurrencies do not return anything");
 			Assert.IsTrue(actualCurrencies.Count > 0, "GetCurrencies do not return any value");
 			Assert.IsTrue(actualCurrencies.All(cur => cur.Length <= 3), "GetCurrencies return currency longer than 3 characters");
+		}
+
+		[TestMethod]
+		public void TestGetCurrency()
+		{
+			// Arrange
+			var form = new Form1();
+			string validCountryName = "France";
+			string invalidCountryName = "invalid input";
+
+			// Act
+			var validCurrency = form.GetCurrency(validCountryName);
+			var invalidCurrency = form.GetCurrency(invalidCountryName);
+
+			// Assert
+			Assert.IsNotNull(validCurrency, "GetCurrency do not return anything");
+			Assert.IsTrue(validCurrency.Length > 0, "GetCurrency return empty value");
+			Assert.AreEqual("FRA", validCurrency); //Warning : Fix value in the file
+			Assert.IsNull(invalidCurrency, "GetCurrency always return something");
 		}
 	}
 }
