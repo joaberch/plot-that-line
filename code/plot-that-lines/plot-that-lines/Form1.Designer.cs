@@ -209,32 +209,39 @@ namespace plot_that_lines
 		private async void addPoint(string countryName)
 		{
 			string inputCurrency = GetCurrency(countryName);
-			string convertToCurrency = comboBox.SelectedItem.ToString();
-
-			List<double> xPos = getYearData();
-			List<double> yPos = getCountryXPos(countryName, xPos.Count());
-
-			var filteredPoints = xPos.Zip(yPos, (x, y) => new { X = x, Y = y })
-				.Where(point => point.Y != 0 && point.X <= endFilter && point.X >= beginFilter)
-				.ToList();
-
-			var test = ConvertCurrency(inputCurrency, convertToCurrency, filteredPoints[0].Y);
-
-			var filteredConvertedPoints = new List<(double X, double Y)>();
-			foreach (var point in filteredPoints)
+			if (comboBox.SelectedItem != null)
 			{
-				double? convertedY = await ConvertCurrency(inputCurrency, convertToCurrency, (int)point.Y);
-				if (convertedY.HasValue)
+				string convertToCurrency = comboBox.SelectedItem.ToString();
+
+
+				List<double> xPos = getYearData();
+				List<double> yPos = getCountryXPos(countryName, xPos.Count());
+
+				var filteredPoints = xPos.Zip(yPos, (x, y) => new { X = x, Y = y })
+					.Where(point => point.Y != 0 && point.X <= endFilter && point.X >= beginFilter)
+					.ToList();
+
+				var test = ConvertCurrency(inputCurrency, convertToCurrency, filteredPoints[0].Y);
+
+				var filteredConvertedPoints = new List<(double X, double Y)>();
+				foreach (var point in filteredPoints)
 				{
-					filteredConvertedPoints.Add((point.X, convertedY.Value));
+					double? convertedY = await ConvertCurrency(inputCurrency, convertToCurrency, (int)point.Y);
+					if (convertedY.HasValue)
+					{
+						filteredConvertedPoints.Add((point.X, convertedY.Value));
+					}
 				}
-			}
 
-			if (filteredPoints.Any())
+				if (filteredPoints.Any())
+				{
+					formsPlot.Plot.Add
+						.Scatter(filteredPoints.Select(p => p.X).ToArray(), filteredPoints.Select(p => p.Y)
+						.ToArray());
+				}
+			} else
 			{
-				formsPlot.Plot.Add
-					.Scatter(filteredPoints.Select(p => p.X).ToArray(), filteredPoints.Select(p => p.Y)
-					.ToArray());
+				MessageBox.Show($"Merci de sélectionner une devise");
 			}
 		}
 
