@@ -348,7 +348,7 @@ namespace plot_that_lines
 			return yPos;
 		}
 
-		private List<string> GetCountries()
+		public List<string> GetCountries()
 		{
 			return File
 				.ReadLines(FILEPATH)

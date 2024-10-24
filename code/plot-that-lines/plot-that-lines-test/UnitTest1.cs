@@ -9,7 +9,14 @@ namespace plot_that_lines_test
 		[TestMethod]
 		public void TestGetCountries()
 		{
-			
+			//Arrange
+			var form = new Form1();
+
+			//Act
+			var value = form.GetCountries();
+
+			//Assert
+			Assert.IsNotNull(value);
 		}
 	}
 }
