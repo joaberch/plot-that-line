@@ -43,7 +43,7 @@ namespace plot_that_lines_test
 		{
 			// Arrange
 			var form = new Form1();
-			string validCountryName = "France";
+			string validCountryName = "France"; //Warning : Fix value in the file
 			string invalidCountryName = "invalid input";
 
 			// Act
@@ -55,6 +55,25 @@ namespace plot_that_lines_test
 			Assert.IsTrue(validCurrency.Length > 0, "GetCurrency return empty value");
 			Assert.AreEqual("FRA", validCurrency); //Warning : Fix value in the file
 			Assert.IsNull(invalidCurrency, "GetCurrency always return something");
+		}
+
+		[TestMethod]
+		public void TestGetCountryXPos()
+		{
+			// Arrange
+			var form = new Form1();
+			string validCountryName = "France"; // Warning : Fix value in the file
+			string invalidCountryName = "invalid input";
+
+			int expectedLength = 64;
+
+			// Act
+			var positions = form.getCountryXPos(validCountryName, expectedLength);
+
+			// Assert
+			Assert.IsNotNull(positions, "GetCountryXPos doesn't return anything");
+			Assert.AreEqual(expectedLength, positions.Count, "GetCountryXPos doesn't return the right amount of point");
+			Assert.IsTrue(positions.All(pos => pos >= 0), "GetCountryXPos return negative value");
 		}
 	}
 }
