@@ -384,5 +384,59 @@ namespace plot_that_lines
 				.Where(currency => currency.Length <= 3)
 				.ToList();
 		}
+		//private void ChangeFilter(object sender, EventArgs e, string headerTitle)
+		//{
+		//	if (sender is TextBox textbox && textbox.Text.Length > 0)
+		//	{
+		//		//Change year filter
+		//		try
+		//		{
+		//			int year = Convert.ToInt32(((System.Windows.Forms.TextBox)sender).Text);
+
+		//			textbox.ForeColor = Color.Black;
+		//			if (textbox.PlaceholderText.Contains("début"))
+		//			{
+		//				beginFilter = year;
+		//			}
+		//			else if (textbox.PlaceholderText.Contains("fin"))
+		//			{
+		//				endFilter = year;
+		//			}
+
+		//		}
+		//		catch { }
+		//		//In case char
+		//		StringBuilder text = new StringBuilder();
+		//		foreach (char item in textbox.Text)
+		//		{
+		//			try
+		//			{
+		//				if (Char.IsDigit(item))
+		//					text.Append(item.ToString());
+		//			}
+		//			catch { }
+		//		}
+		//		textbox.Text = text.ToString();
+
+		//		//Update graph
+		//		formsPlot.Plot.Clear();
+
+		//		if (beginFilter < BEGINNINGYEAR)
+		//		{
+		//			beginFilter = BEGINNINGYEAR;
+		//		}
+		//		if (endFilter < beginFilter)
+		//		{
+		//			endFilter = ENDINGYEAR;
+		//		}
+
+		//		(List<double> filteredX, List<double> filteredY) filtered = addPoint(headerTitle, beginFilter, endFilter);
+
+		//		formsPlot.Plot.Add.Scatter(filtered.filteredX, filtered.filteredY);
+
+		//	}
+		//	formsPlot.Refresh();
+		//}
+
 	}
 }
