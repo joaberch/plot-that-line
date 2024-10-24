@@ -212,7 +212,7 @@ namespace plot_that_lines
 			string convertToCurrency = comboBox.SelectedItem.ToString();
 
 			List<double> xPos = getYearData();
-			List<double> yPos = getCountryXPos(countryName, FILEPATH, xPos.Count());
+			List<double> yPos = getCountryXPos(countryName, xPos.Count());
 
 			var filteredPoints = xPos.Zip(yPos, (x, y) => new { X = x, Y = y })
 				.Where(point => point.Y != 0 && point.X <= endFilter && point.X >= beginFilter)
@@ -285,7 +285,7 @@ namespace plot_that_lines
 			var allPoints = selectedCountries.SelectMany(country =>
 			{
 				List<double> xPos = getYearData();
-				List<double> yPos = getCountryXPos(country, FILEPATH, xPos.Count());
+				List<double> yPos = getCountryXPos(country, xPos.Count());
 
 				return xPos.Zip(yPos, (x, y) => new { X = x, Y = y })
 							.Where(point => point.Y != 0 && point.X <= endFilter && point.X >= beginFilter);
@@ -302,11 +302,11 @@ namespace plot_that_lines
 			}
 		}
 
-		private List<double> getCountryXPos(string name, string path, int length)
+		public List<double> getCountryXPos(string name, int length)
 		{
 			List<double> xPos = new List<double>();
 
-			List<string> lines = new List<string>(File.ReadAllLines(path));
+			List<string> lines = new List<string>(File.ReadAllLines(FILEPATH));
 			List<string> selectedLine = new List<string>(lines.Where(line => line.Contains(name)));
 
 			string[] data = selectedLine[0].ToString().Split(",");
@@ -325,7 +325,7 @@ namespace plot_that_lines
 					Debug.WriteLine(item);
 				}
 			}
-			return xPos.Take(length).ToList(); //TODO : 64 length
+			return xPos.Take(length).ToList();
 		}
 
 		private List<double> getYearData()
