@@ -55,8 +55,8 @@ namespace plot_that_lines_test
 			string invalidCountryName = "invalid input";
 
 			// Act
-			var validCurrency = form.GetCurrency(validCountryName);
-			var invalidCurrency = form.GetCurrency(invalidCountryName);
+			var validCurrency = form.GetCurrencyForCountry(validCountryName);
+			var invalidCurrency = form.GetCurrencyForCountry(invalidCountryName);
 
 			// Assert
 			Assert.IsNotNull(validCurrency, "GetCurrency do not return anything");

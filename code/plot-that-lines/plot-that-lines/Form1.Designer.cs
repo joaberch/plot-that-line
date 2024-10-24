@@ -201,7 +201,7 @@ namespace plot_that_lines
 			formsPlot.Refresh();
 		}
 
-		public string GetCurrency(string countryName)
+		public string GetCurrencyForCountry(string countryName)
 		{
 			foreach (var line in File.ReadLines(FILEPATH))
 			{
@@ -216,7 +216,7 @@ namespace plot_that_lines
 
 		private async void addPoint(string countryName)
 		{
-			string inputCurrency = GetCurrency(countryName);
+			string inputCurrency = GetCurrencyForCountry(countryName);
 			if (comboBox.SelectedItem != null)
 			{
 				string convertToCurrency = comboBox.SelectedItem.ToString();
