@@ -328,7 +328,7 @@ namespace plot_that_lines
 			return xPos.Take(length).ToList();
 		}
 
-		private List<double> getYearData()
+		public List<double> getYearData()
 		{
 			List<double> yPos = new List<double>();
 

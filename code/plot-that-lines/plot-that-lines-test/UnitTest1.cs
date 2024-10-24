@@ -75,5 +75,32 @@ namespace plot_that_lines_test
 			Assert.AreEqual(expectedLength, positions.Count, "GetCountryXPos doesn't return the right amount of point");
 			Assert.IsTrue(positions.All(pos => pos >= 0), "GetCountryXPos return negative value");
 		}
+
+		[TestMethod]
+		public void TestGetYearData()
+		{
+			// Arrange
+			var form = new Form1();
+			const int BEGINNINGYEAR = 1960; //Warning : Fix value depending the file
+			const int ENDINGYEAR = 2023; //Warning : Fix value depending the file
+			int expectedCount = ENDINGYEAR - BEGINNINGYEAR + 1; // Nombre d'années entre 1960 et 2022
+			var yearsFromConst = Enumerable.Range(BEGINNINGYEAR, expectedCount);
+
+			// Act
+			var years = form.getYearData();
+
+			// Assert
+			Assert.IsNotNull(years, "getYearData doesn't return any value");
+			Assert.AreEqual(expectedCount, years.Count, "getYearData doesn't return the right number of value");
+			foreach ( var y in years )
+			{
+				bool isIn = false;
+				foreach ( var x in yearsFromConst )
+				{
+					if (x == y ) { isIn = true; break; }
+				}
+				Assert.IsTrue(isIn, $"getYearData returns {y}");
+			}
+		}
 	}
 }
