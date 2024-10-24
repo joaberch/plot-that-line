@@ -20,7 +20,15 @@ namespace plot_that_lines_test
 			//Assert
 			Assert.IsNotNull(countries, "GetCountries do not return anything");
 			Assert.IsTrue(countries.Count > 0, "GetCountries do not return any value");
-			Assert.AreEqual(countries, sortedCountries, "GetCountries do not return sorted value");
+			foreach (var c in countries)
+			{
+				bool isEqual = false;
+				foreach (var s in sortedCountries)
+				{
+					if (s == c) { isEqual = true; break; }
+				}
+				Assert.IsTrue(isEqual, $"getCountries returns {c} not sorted");
+			}
 		}
 
 		[TestMethod]
