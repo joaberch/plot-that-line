@@ -129,6 +129,13 @@ namespace plot_that_lines
 			};
 			//endFilter.TextChanged += new EventHandler((sender, e) => ChangeFilter(sender, e, headerTitle));
 
+			//currency Label
+			Label currencyLabel = new Label()
+			{
+				Text = "Devise",
+				Location = new System.Drawing.Point(820, 351)
+			};
+
 			//ComboBox
 			comboBox = new ComboBox()
 			{
@@ -152,6 +159,7 @@ namespace plot_that_lines
 			Controls.Add(beginFilter);
 			Controls.Add(endFilterLabel);
 			Controls.Add(endFilter);
+			Controls.Add(currencyLabel);
 			Controls.Add(comboBox);
 
 			Name = "Plot that lines";
