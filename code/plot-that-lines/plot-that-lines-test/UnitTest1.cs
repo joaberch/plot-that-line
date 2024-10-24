@@ -13,10 +13,13 @@ namespace plot_that_lines_test
 			var form = new Form1();
 
 			//Act
-			var value = form.GetCountries();
+			var countries = form.GetCountries();
+			var sortedCountries = countries.OrderBy(x => x).ToList();
 
 			//Assert
-			Assert.IsNotNull(value);
+			Assert.IsNotNull(countries, "GetCountries do not return anything");
+			Assert.IsTrue(countries.Count > 0, "GetCountries do not return any value");
+			Assert.AreEqual(countries, sortedCountries, "GetCountries do not return sorted value");
 		}
 	}
 }
