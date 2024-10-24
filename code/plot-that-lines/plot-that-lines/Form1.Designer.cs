@@ -358,7 +358,7 @@ namespace plot_that_lines
 				.ToList();
 		}
 
-		private List<string> GetCurrencies()
+		public List<string> GetCurrencies()
 		{
 			return File.ReadLines(FILEPATH)
 				.Skip(1)
