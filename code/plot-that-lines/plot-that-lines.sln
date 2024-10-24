@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "plot-that-lines", "plot-that-lines\plot-that-lines.csproj", "{AB106096-8717-4931-8C03-3B1B0F249803}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "plot-that-lines", "plot-that-lines\plot-that-lines.csproj", "{AB106096-8717-4931-8C03-3B1B0F249803}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "plot-that-lines-test", "plot-that-lines-test\plot-that-lines-test.csproj", "{24674D60-E242-4873-AE09-EBC3EE1AF121}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{AB106096-8717-4931-8C03-3B1B0F249803}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB106096-8717-4931-8C03-3B1B0F249803}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB106096-8717-4931-8C03-3B1B0F249803}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24674D60-E242-4873-AE09-EBC3EE1AF121}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24674D60-E242-4873-AE09-EBC3EE1AF121}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24674D60-E242-4873-AE09-EBC3EE1AF121}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24674D60-E242-4873-AE09-EBC3EE1AF121}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
