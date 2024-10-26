@@ -229,23 +229,22 @@ namespace plot_that_lines
 					.Where(point => point.Y != 0 && point.X <= endFilter && point.X >= beginFilter)
 					.ToList();
 
-				var test = ConvertCurrency(inputCurrency, convertToCurrency, filteredPoints[0].Y);
-
-				var filteredConvertedPoints = new List<(double X, double Y)>();
-				foreach (var point in filteredPoints)
-				{
-					double? convertedY = await ConvertCurrency(inputCurrency, convertToCurrency, (int)point.Y);
-					if (convertedY.HasValue)
-					{
-						filteredConvertedPoints.Add((point.X, convertedY.Value));
-					}
-				}
+				//var filteredConvertedPoints = new List<(double X, double Y)>();
+				//foreach (var point in filteredPoints)
+				//{
+				//	double? convertedY = await ConvertCurrency(inputCurrency, convertToCurrency, (int)point.Y);
+				//	if (convertedY.HasValue)
+				//	{
+				//		filteredConvertedPoints.Add((point.X, convertedY.Value));
+				//	}
+				//}
 
 				if (filteredPoints.Any())
 				{
 					formsPlot.Plot.Add
-						.Scatter(filteredPoints.Select(p => p.X).ToArray(), filteredPoints.Select(p => p.Y)
-						.ToArray());
+						.Scatter(
+						filteredPoints.Select(p => p.X).ToArray(), 
+						filteredPoints.Select(p => p.Y).ToArray());
 				}
 			} else
 			{
