@@ -73,7 +73,7 @@ namespace plot_that_lines
 				"Sélectionnez un pays pour ouvrir une fenêtre avec un graphique détaillant ses dépenses militaires par année.\n" +
 				"Dans la fenêtre graphique, passez la souris sur un point pour afficher l'année et le montant des dépenses de cette année.\n" +
 				"Vous pouvez également ajuster les années de début et de fin pour filtrer les données affichées et sélectionner une devise de conversion via le menu déroulant.",
-		};
+			};
 
 			// title
 			Label title = new Label()
