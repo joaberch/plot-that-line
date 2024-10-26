@@ -9,8 +9,6 @@ namespace plot_that_lines
 	partial class Form1
 	{
 		const string FILEPATH = "../../../../data/API_MS.MIL.XPND.CN_DS2_fr_csv_v2_3446916.csv";
-		//TODO : automatically get first and last year
-		//TODO : interface
 		const int BEGINNINGYEAR = 1960; //year we start collecting data
 		const int ENDINGYEAR = 2022;    //year we stop collecting data
 
@@ -275,7 +273,7 @@ namespace plot_that_lines
 				}
 			}
 
-			try //TODO : check if need to whitelist the ip address to the api
+			try
 			{
 				using var client = new HttpClient();
 				foreach (var point in points)
