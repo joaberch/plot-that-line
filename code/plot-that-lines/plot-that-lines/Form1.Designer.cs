@@ -68,10 +68,12 @@ namespace plot_that_lines
 				Name = "label1",
 				Size = new Size(603, 45),
 				TabIndex = 1,
-				Text = "Bienvenue, cette application permet d'afficher les dépenses militaires de pays dans leurs monnaies respectives.\n" +
-				"Cliquer sur le nom d'un pays pour ouvrir une nouvelle fenêtre avec un graphique des dépenses militaires du pays.\n" +
-				"Dans une fenêtre avec un graphique faites glisser votre souris sur un point pour afficher l'année et les dépenses de l'année.",
-			};
+				Text = "Bienvenue dans cette application d'affichage des dépenses militaires par pays.\n" +
+				"Vous pouvez afficher les dépenses militaires d'un pays dans sa devise d'origine ou les convertir dans une autre devise au choix.\n" +
+				"Sélectionnez un pays pour ouvrir une fenêtre avec un graphique détaillant ses dépenses militaires par année.\n" +
+				"Dans la fenêtre graphique, passez la souris sur un point pour afficher l'année et le montant des dépenses de cette année.\n" +
+				"Vous pouvez également ajuster les années de début et de fin pour filtrer les données affichées et sélectionner une devise de conversion via le menu déroulant.",
+		};
 
 			// title
 			Label title = new Label()
