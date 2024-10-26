@@ -225,38 +225,45 @@ namespace plot_that_lines
 				List<double> xPos = getYearData();
 				List<double> yPos = getCountryXPos(countryName, xPos.Count());
 
-				var filteredPoints = xPos.Zip(yPos, (x, y) => new { X = x, Y = y })
-					.Where(point => point.Y != 0 && point.X <= endFilter && point.X >= beginFilter)
-					.ToList();
+				//Prevent any Y value to be 0 by removing the x and y of the list
+				List<(double X, double Y)> filteredPoints = xPos.Zip(yPos, (x, y) => (X: x, Y: y))
+				.Where(point => point.Y != 0 && point.X <= endFilter && point.X >= beginFilter)
+				.ToList();
 
-				//var filteredConvertedPoints = new List<(double X, double Y)>();
-				//foreach (var point in filteredPoints)
-				//{
-				//	double? convertedY = await ConvertCurrency(inputCurrency, convertToCurrency, (int)point.Y);
-				//	if (convertedY.HasValue)
-				//	{
-				//		filteredConvertedPoints.Add((point.X, convertedY.Value));
-				//	}
-				//}
+				List<(double x, double y)> filteredConvertedPoints = await ConvertCurrency(filteredPoints, inputCurrency, convertToCurrency);
 
-				if (filteredPoints.Any())
+				//Converted with API
+				if (filteredConvertedPoints.Any())
 				{
-					formsPlot.Plot.Add
-						.Scatter(
-						filteredPoints.Select(p => p.X).ToArray(), 
-						filteredPoints.Select(p => p.Y).ToArray());
+					formsPlot.Plot.Add.Scatter(
+						filteredConvertedPoints.Select(p => p.x).ToArray(),
+						filteredConvertedPoints.Select(p => p.y).ToArray()
+					);
+					formsPlot.Refresh();
+				} else if (filteredPoints.Any())
+				{
+					MessageBox.Show("Problème avec l'API, affichage du graphique dans la devise local du pays sélectionné");
+					formsPlot.Plot.Clear();
+					formsPlot.Plot.Add.Scatter(
+						filteredPoints.Select(p => p.X).ToArray(),
+						filteredPoints.Select(p => p.Y).ToArray()
+					);
+					selectedCountries.Clear();
+					formsPlot.Refresh();
 				}
-			} else
+			}
+			else
 			{
 				MessageBox.Show($"Merci de sélectionner une devise");
 			}
 		}
 
-		static async Task<Double?> ConvertCurrency(string inputCurrency, string convertToCurrency, double amount)
+		static async Task<List<(double, double)>> ConvertCurrency(List<(double, double)> points, string inputCurrency, string convertToCurrency)
 		{
 			string apiKey = "0";
 			StreamReader sr2 = new StreamReader(".env");
 			string line2;
+			List<(double x, double y)> convertedPoints = new List<(double x, double y)>();
 
 			while ((line2 = sr2.ReadLine()) != null)
 			{
@@ -269,29 +276,27 @@ namespace plot_that_lines
 			try //TODO : check if need to whitelist the ip address to the api
 			{
 				using var client = new HttpClient();
-				var url = $"https://api.getgeoapi.com/v2/currency/convert?api_key={apiKey}&from={inputCurrency}&to={convertToCurrency}&amount={amount}&format=json";
-
-				var response = await client.GetAsync(url);
-				if (response.IsSuccessStatusCode)
+				foreach (var point in points)
 				{
-					var responseContent = await response.Content.ReadAsStringAsync();
-					Debug.WriteLine($"Response : {responseContent}");
+					string url = $"https://api.getgeoapi.com/v2/currency/convert?api_key={apiKey}&from={inputCurrency}&to={convertToCurrency}&amount={point.Item2}&format=json";
+					var response = await client.GetAsync(url);
+					if (response.IsSuccessStatusCode)
+					{
+						var responseContent = await response.Content.ReadAsStringAsync();
+						Debug.WriteLine($"Response : {responseContent}");
 
-					string key = "rate_for_amount\":\"";
-					var value = Convert.ToDouble(responseContent.Split(key)[1].Split("\"").First().Replace(".", ","));
-
-					return value;
-				}
-				else
-				{
-					return null;
-				}
+						string key = "rate_for_amount\":\"";
+						var value = Convert.ToDouble(responseContent.Split(key)[1].Split("\"").First().Replace(".", ","));
+						convertedPoints.Add((point.Item1, value));
+					}
+				};
+				return convertedPoints;
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.ToString());
-				return null;
+				Debug.WriteLine($"Debug : {ex.ToString()}");
 			}
+			return convertedPoints;
 		}
 
 		private void autoScalePlot()
