@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualBasic.ApplicationServices;
 using ScottPlot.WinForms;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 
@@ -286,7 +287,9 @@ namespace plot_that_lines
 						Debug.WriteLine($"Response : {responseContent}");
 
 						string key = "rate_for_amount\":\"";
-						var value = Convert.ToDouble(responseContent.Split(key)[1].Split("\"").First().Replace(".", ","));
+						double rateForAmount = Convert.ToDouble(responseContent.Split(key)[1].Split("\"").First(), CultureInfo.InvariantCulture);
+						double originalAmount = Convert.ToDouble(point.Item2.ToString("0.0", CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
+						var value = rateForAmount * originalAmount;
 						convertedPoints.Add((point.Item1, value));
 					}
 				};
