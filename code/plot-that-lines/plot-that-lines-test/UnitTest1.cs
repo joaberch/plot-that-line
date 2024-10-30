@@ -76,7 +76,7 @@ namespace plot_that_lines_test
 			int expectedLength = 64;
 
 			// Act
-			var positions = form.getCountryXPos(validCountryName, expectedLength);
+			var positions = form.GetCountryXPos(validCountryName, expectedLength);
 
 			// Assert
 			Assert.IsNotNull(positions, "GetCountryXPos doesn't return anything");

@@ -98,7 +98,7 @@ namespace plot_that_lines
                 Width = 200,
                 Height = 200,
             };
-            listBox.SelectedIndexChanged += new EventHandler(button_clicked);
+            listBox.SelectedIndexChanged += new EventHandler(CountrySelected);
 
             if (!File.Exists(FILEPATH))
             {
@@ -191,7 +191,7 @@ namespace plot_that_lines
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void button_clicked(object sender, EventArgs e)
+        private async void CountrySelected(object sender, EventArgs e)
         {
             if (sender is not ListBox listBox) return;
 
@@ -230,11 +230,11 @@ namespace plot_that_lines
 
             foreach (var country in selectedCountries)
             {
-                addPoint(country);
+                AddPoint(country);
             }
 
             //Scale the plot
-            autoScalePlot();
+            AutoScalePlot();
             formsPlot.Refresh();
         }
 
@@ -261,7 +261,7 @@ namespace plot_that_lines
         /// </summary>
         /// <param name="countryName"></param>
         /// <param name="filteredPoints"></param>
-        private void addLocalPoint(string countryName, List<(double X, double Y)> filteredPoints)
+        private void AddLocalPoint(string countryName, List<(double X, double Y)> filteredPoints)
         {
             selectedCountries.Clear();
             selectedCountries.Add(countryName);
@@ -276,7 +276,7 @@ namespace plot_that_lines
         /// Display the country with the amount converted to the currency wanted
         /// </summary>
         /// <param name="countryName"></param>
-        private async void addPoint(string countryName)
+        private async void AddPoint(string countryName)
         {
             string inputCurrency = GetCurrencyForCountry(countryName);
             string convertToCurrency = comboBox.SelectedItem.ToString();
@@ -284,7 +284,7 @@ namespace plot_that_lines
 			double rate;
 			try
 			{
-				rate = await getRate(inputCurrency, convertToCurrency);
+				rate = await GetRate(inputCurrency, convertToCurrency);
 			}
 			catch (Exception ex)
 			{
@@ -294,7 +294,7 @@ namespace plot_that_lines
 			}
 
 			List<double> xPos = GetYearData();
-            List<double> yPos = getCountryXPos(countryName, xPos.Count());
+            List<double> yPos = GetCountryXPos(countryName, xPos.Count());
 
             List<(double X, double Y)> filteredPoints = xPos.Zip(yPos, (x, y) => (X: x, Y: y))
                 .Where(point => point.Y != 0 && point.X <= endFilter && point.X >= beginFilter)
@@ -315,7 +315,7 @@ namespace plot_that_lines
             else
             {
                 MessageBox.Show("Problème avec l'API, affichage du graphique dans la devise locale du pays sélectionné");
-                addLocalPoint(countryName, filteredPoints);
+                AddLocalPoint(countryName, filteredPoints);
             }
         }
 
@@ -325,7 +325,7 @@ namespace plot_that_lines
         /// <param name="inputCurrency"></param>
         /// <param name="convertToCurrency"></param>
         /// <returns></returns>
-        public async Task<double> getRate(string inputCurrency, string convertToCurrency)
+        public async Task<double> GetRate(string inputCurrency, string convertToCurrency)
         {
 			string apiKey = "0";
 			using StreamReader sr = new StreamReader(ENVFILEPATH);
@@ -357,12 +357,12 @@ namespace plot_that_lines
         /// <summary>
         /// Scale the graph depending on the value displayed
         /// </summary>
-        private void autoScalePlot()
+        private void AutoScalePlot()
         {
             var allPoints = selectedCountries.SelectMany(country =>
             {
                 List<double> xPos = GetYearData();
-                List<double> yPos = getCountryXPos(country, xPos.Count());
+                List<double> yPos = GetCountryXPos(country, xPos.Count());
 
                 return xPos.Zip(yPos, (x, y) => new { X = x, Y = y })
                             .Where(point => point.Y != 0 && point.X <= endFilter && point.X >= beginFilter);
@@ -398,7 +398,7 @@ namespace plot_that_lines
 		/// <param name="name"></param>
 		/// <param name="length"></param>
 		/// <returns></returns>
-		public List<double> getCountryXPos(string name, int length)
+		public List<double> GetCountryXPos(string name, int length)
         {
             List<double> xPos = new List<double>();
 
@@ -488,7 +488,6 @@ namespace plot_that_lines
                 {
                     // Parse the year input and update filters
                     int year = Convert.ToInt32(textbox.Text);
-                    //TODO
                     if (textbox.PlaceholderText.Contains("début"))
                     {
                         beginFilter = Math.Max(year, BEGINNINGYEAR); // Ensure it's within the allowed range
@@ -525,10 +524,10 @@ namespace plot_that_lines
 
             foreach (var country in selectedCountries)
             {
-                addPoint(country);
+                AddPoint(country);
             }
 
-            autoScalePlot(); // Adjust scaling to visible data
+            AutoScalePlot(); // Adjust scaling to visible data
             formsPlot.Refresh();
         }
 
