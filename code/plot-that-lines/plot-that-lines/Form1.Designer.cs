@@ -293,7 +293,7 @@ namespace plot_that_lines
 				rate = 1; //Default value
 			}
 
-			List<double> xPos = getYearData();
+			List<double> xPos = GetYearData();
             List<double> yPos = getCountryXPos(countryName, xPos.Count());
 
             List<(double X, double Y)> filteredPoints = xPos.Zip(yPos, (x, y) => (X: x, Y: y))
@@ -361,7 +361,7 @@ namespace plot_that_lines
         {
             var allPoints = selectedCountries.SelectMany(country =>
             {
-                List<double> xPos = getYearData();
+                List<double> xPos = GetYearData();
                 List<double> yPos = getCountryXPos(country, xPos.Count());
 
                 return xPos.Zip(yPos, (x, y) => new { X = x, Y = y })
@@ -380,19 +380,29 @@ namespace plot_that_lines
         }
 
         /// <summary>
-        /// Get the data of the country from the csv
+        /// Read the csv file and return it as a list of string
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="length"></param>
+        /// <param name="path"></param>
         /// <returns></returns>
-        public List<double> getCountryXPos(string name, int length)
+		private static List<string[]> ReadCsvFile(string path)
+		{
+			return File.ReadAllLines(path)
+				.Skip(1) // Skips header
+				.Select(line => line.Split(','))
+				.ToList();
+		}
+
+		/// <summary>
+		/// Get the data of the country from the csv
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="length"></param>
+		/// <returns></returns>
+		public List<double> getCountryXPos(string name, int length)
         {
             List<double> xPos = new List<double>();
 
-            List<string> lines = new List<string>(File.ReadAllLines(FILEPATH));
-            List<string> selectedLine = new List<string>(lines.Where(line => line.Contains(name)));
-
-            string[] data = selectedLine[0].ToString().Split(",");
+            string[] data = ReadCsvFile(FILEPATH).Where(line => line[0].Contains(name)).ToList()[0];
 
             foreach (var item in data)
             {
@@ -415,7 +425,7 @@ namespace plot_that_lines
         /// Get the year length in which the data are displayed
         /// </summary>
         /// <returns></returns>
-        public List<double> getYearData()
+        public List<double> GetYearData()
         {
             List<double> yPos = new List<double>();
 
@@ -443,13 +453,11 @@ namespace plot_that_lines
         {
             try
             {
-                return File
-                    .ReadLines(FILEPATH)
-                    .Skip(1)
-                    .Select(line => line.Replace("\"", "").Split(",")[0])
-                    .OrderBy(country => country)
-                    .ToList();
-            }
+				return ReadCsvFile(FILEPATH)
+		            .Select(fields => fields[0].Replace("\"", ""))
+		            .OrderBy(country => country)
+		            .ToList();
+			}
             catch { return null; }
         }
 
@@ -461,15 +469,14 @@ namespace plot_that_lines
         {
             try
             {
-                return File.ReadLines(FILEPATH)
-                    .Skip(1)
-                    .Select(line => line.Replace("\"", "").Split(","))
-                    .Select(parts => parts[1])
-                    .Distinct()
-                    .OrderBy(currency => currency)
-                    .Where(currency => currency.Length <= 3)
-                    .ToList();
-            }
+				return ReadCsvFile(FILEPATH)
+			        .Where(parts => parts.Length > 1) // Check every line has at least 2 data
+			        .Select(parts => parts[1].Replace("\"", "").Trim())
+			        .Distinct()
+			        .Where(currency => currency.Length <= 3) // Filter only currency with 3 length or less
+			        .OrderBy(currency => currency)
+			        .ToList();
+			}
             catch { return null; }
         }
 

@@ -95,7 +95,7 @@ namespace plot_that_lines_test
 			var yearsFromConst = Enumerable.Range(BEGINNINGYEAR, expectedCount);
 
 			// Act
-			var years = form.getYearData();
+			var years = form.GetYearData();
 
 			// Assert
 			Assert.IsNotNull(years, "getYearData doesn't return any value");
