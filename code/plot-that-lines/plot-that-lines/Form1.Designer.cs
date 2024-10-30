@@ -9,12 +9,13 @@ namespace plot_that_lines
 {
     partial class Form1
     {
-        const string FILEPATH = "../../../../data/API_MS.MIL.XPND.CN_DS2_fr_csv_v2_3446916.csv";
+        //TODO : add certain const in the .env instead of there
+        const string FILEPATH = "../../../../data/API_MS.MIL.XPND.CN_DS2_fr_csv_v2_3446916.csv"; //path of the data file
         const int BEGINNINGYEAR = 1960; //year we start collecting data
         const int ENDINGYEAR = 2022;    //year we stop collecting data
-        const string ENVFILEPATH = ".env";
+        const string ENVFILEPATH = ".env"; //path of the .env file
 
-        List<string> selectedCountries = new List<string>();
+        List<string> selectedCountries = new List<string>(); //list of the countries selected to display
 
         FormsPlot formsPlot;
         ComboBox comboBox;
@@ -182,6 +183,11 @@ namespace plot_that_lines
             PerformLayout();
         }
 
+        /// <summary>
+        /// When a country is selected in the comboBox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void button_clicked(object sender, EventArgs e)
         {
             if (sender is not ListBox listBox) return;
@@ -205,12 +211,14 @@ namespace plot_that_lines
 
             formsPlot.Plot.Clear();
 
+            //Check if the user has selected a currency
             if (comboBox.SelectedItem == null)
             {
                 MessageBox.Show("Merci de sélectionner une devise");
                 return;
             }
 
+            //Check if a .env file exist
             if (!File.Exists(ENVFILEPATH))
             {
                 MessageBox.Show("Fichier .env introuvable");
@@ -222,12 +230,16 @@ namespace plot_that_lines
                 addPoint(country);
             }
 
-
             //Scale the plot
             autoScalePlot();
             formsPlot.Refresh();
         }
 
+        /// <summary>
+        /// Get the currency type of the country
+        /// </summary>
+        /// <param name="countryName"></param>
+        /// <returns></returns>
         public string GetCurrencyForCountry(string countryName)
         {
             foreach (var line in File.ReadLines(FILEPATH))
@@ -241,6 +253,11 @@ namespace plot_that_lines
             return null;
         }
 
+        /// <summary>
+        /// Display only one graph with the local data of the country
+        /// </summary>
+        /// <param name="countryName"></param>
+        /// <param name="filteredPoints"></param>
         private void addLocalPoint(string countryName, List<(double X, double Y)> filteredPoints)
         {
             selectedCountries.Clear();
@@ -251,14 +268,13 @@ namespace plot_that_lines
             formsPlot.Refresh();
         }
 
+        /// <summary>
+        /// Display the country with the amount converted to the currency wanted
+        /// </summary>
+        /// <param name="countryName"></param>
         private async void addPoint(string countryName)
         {
             string inputCurrency = GetCurrencyForCountry(countryName);
-            if (comboBox.SelectedItem == null)
-            {
-                MessageBox.Show("Merci de sélectionner une devise");
-                return;
-            }
 
             string convertToCurrency = comboBox.SelectedItem.ToString();
 
@@ -286,8 +302,16 @@ namespace plot_that_lines
             }
         }
 
+        /// <summary>
+        /// Convert value depending with the currency wanted
+        /// </summary>
+        /// <param name="points"></param>
+        /// <param name="inputCurrency"></param>
+        /// <param name="convertToCurrency"></param>
+        /// <returns></returns>
         static async Task<List<(double, double)>> ConvertCurrency(List<(double, double)> points, string inputCurrency, string convertToCurrency)
         {
+            //TODO : only one request and then use the rate
             string apiKey = "0";
             StreamReader sr2 = new StreamReader(".env");
             string line2;
@@ -329,6 +353,9 @@ namespace plot_that_lines
             return convertedPoints;
         }
 
+        /// <summary>
+        /// Scale the graph depending on the value displayed
+        /// </summary>
         private void autoScalePlot()
         {
             var allPoints = selectedCountries.SelectMany(country =>
@@ -351,6 +378,12 @@ namespace plot_that_lines
             }
         }
 
+        /// <summary>
+        /// Get the data of the country from the csv
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
         public List<double> getCountryXPos(string name, int length)
         {
             List<double> xPos = new List<double>();
@@ -377,6 +410,10 @@ namespace plot_that_lines
             return xPos.Take(length).ToList();
         }
 
+        /// <summary>
+        /// Get the year length in which the data are displayed
+        /// </summary>
+        /// <returns></returns>
         public List<double> getYearData()
         {
             List<double> yPos = new List<double>();
@@ -397,6 +434,10 @@ namespace plot_that_lines
             return yPos;
         }
 
+        /// <summary>
+        /// Get every countries from the csv
+        /// </summary>
+        /// <returns></returns>
         public List<string> GetCountries()
         {
             try
@@ -411,6 +452,10 @@ namespace plot_that_lines
             catch { return null; }
         }
 
+        /// <summary>
+        /// Get every currencies from the csv
+        /// </summary>
+        /// <returns></returns>
         public List<string> GetCurrencies()
         {
             try
@@ -426,6 +471,7 @@ namespace plot_that_lines
             }
             catch { return null; }
         }
+
         //private void ChangeFilter(object sender, EventArgs e, string headerTitle)
         //{
         //	if (sender is TextBox textbox && textbox.Text.Length > 0)
