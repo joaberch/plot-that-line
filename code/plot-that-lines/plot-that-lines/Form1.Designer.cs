@@ -162,7 +162,7 @@ namespace plot_that_lines
             }
 
             // Form1
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(6F, 14F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoScroll = true;
             ClientSize = new Size(1000, 450);
