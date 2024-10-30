@@ -241,49 +241,48 @@ namespace plot_that_lines
             return null;
         }
 
-        private async void addLocalPoint(string countryName)
+        private void addLocalPoint(string countryName, List<(double X, double Y)> filteredPoints)
         {
-
+            selectedCountries.Clear();
+            formsPlot.Plot.Add.Scatter(
+                filteredPoints.Select(p => p.X).ToArray(),
+                filteredPoints.Select(p => p.Y).ToArray()
+            );
+            formsPlot.Refresh();
         }
 
         private async void addPoint(string countryName)
         {
             string inputCurrency = GetCurrencyForCountry(countryName);
-            if (comboBox.SelectedItem != null)
+            if (comboBox.SelectedItem == null)
             {
-                string convertToCurrency = comboBox.SelectedItem.ToString();
+                MessageBox.Show("Merci de sélectionner une devise");
+                return;
+            }
 
-                List<double> xPos = getYearData();
-                List<double> yPos = getCountryXPos(countryName, xPos.Count());
+            string convertToCurrency = comboBox.SelectedItem.ToString();
 
-                //Prevent any Y value to be 0 by removing the x and y of the list
-                List<(double X, double Y)> filteredPoints = xPos.Zip(yPos, (x, y) => (X: x, Y: y))
+            List<double> xPos = getYearData();
+            List<double> yPos = getCountryXPos(countryName, xPos.Count());
+
+            List<(double X, double Y)> filteredPoints = xPos.Zip(yPos, (x, y) => (X: x, Y: y))
                 .Where(point => point.Y != 0 && point.X <= endFilter && point.X >= beginFilter)
                 .ToList();
 
-                List<(double x, double y)> filteredConvertedPoints = await ConvertCurrency(filteredPoints, inputCurrency, convertToCurrency);
+            List<(double x, double y)> filteredConvertedPoints = await ConvertCurrency(filteredPoints, inputCurrency, convertToCurrency);
 
-
-                //Converted with API
-                if (filteredConvertedPoints.Any())
-                {
-                    formsPlot.Plot.Add.Scatter(
-                        filteredConvertedPoints.Select(p => p.x).ToArray(),
-                        filteredConvertedPoints.Select(p => p.y).ToArray()
-                    );
-                    formsPlot.Refresh();
-                }
-                else if (filteredPoints.Any())
-                {
-                    MessageBox.Show("Problème avec l'API, affichage du graphique dans la devise local du pays sélectionné");
-                    formsPlot.Plot.Clear();
-                    formsPlot.Plot.Add.Scatter(
-                        filteredPoints.Select(p => p.X).ToArray(),
-                        filteredPoints.Select(p => p.Y).ToArray()
-                    );
-                    selectedCountries.Clear();
-                    formsPlot.Refresh();
-                }
+            if (filteredConvertedPoints.Any())
+            {
+                formsPlot.Plot.Add.Scatter(
+                    filteredConvertedPoints.Select(p => p.x).ToArray(),
+                    filteredConvertedPoints.Select(p => p.y).ToArray()
+                );
+                formsPlot.Refresh();
+            }
+            else
+            {
+                MessageBox.Show("Problème avec l'API, affichage du graphique dans la devise locale du pays sélectionné");
+                addLocalPoint(countryName, filteredPoints);
             }
         }
 
