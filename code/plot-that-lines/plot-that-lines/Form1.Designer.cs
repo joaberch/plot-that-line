@@ -3,6 +3,7 @@ using ScottPlot.WinForms;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 
 namespace plot_that_lines
@@ -122,7 +123,7 @@ namespace plot_that_lines
                 PlaceholderText = $"Date de début ({BEGINNINGYEAR})",
                 Width = 150,
             };
-            //beginFilter.TextChanged += new EventHandler();
+            beginFilter.TextChanged += new EventHandler((sender, e) => ChangeFilter(sender, e));
 
             //Label endFilter
             Label endFilterLabel = new Label()
@@ -138,7 +139,7 @@ namespace plot_that_lines
                 PlaceholderText = $"Date de fin ({ENDINGYEAR})",
                 Width = 150,
             };
-            //endFilter.TextChanged += new EventHandler((sender, e) => ChangeFilter(sender, e, headerTitle));
+            endFilter.TextChanged += new EventHandler((sender, e) => ChangeFilter(sender, e));
 
             //currency Label
             Label currencyLabel = new Label()
@@ -261,6 +262,7 @@ namespace plot_that_lines
         private void addLocalPoint(string countryName, List<(double X, double Y)> filteredPoints)
         {
             selectedCountries.Clear();
+            selectedCountries.Add(countryName);
             formsPlot.Plot.Add.Scatter(
                 filteredPoints.Select(p => p.X).ToArray(),
                 filteredPoints.Select(p => p.Y).ToArray()
@@ -398,7 +400,7 @@ namespace plot_that_lines
                 try
                 {
                     string pos = item.Replace("\\\"", "").Replace("\"", "").Replace(".", ",");
-                    //Need to have the same x and y value
+                    //Need to have the same number of x and y
                     if (string.IsNullOrEmpty(pos)) { xPos.Add(0); };
                     xPos.Add(Convert.ToDouble(pos));
                 }
@@ -472,59 +474,57 @@ namespace plot_that_lines
             catch { return null; }
         }
 
-        //private void ChangeFilter(object sender, EventArgs e, string headerTitle)
-        //{
-        //	if (sender is TextBox textbox && textbox.Text.Length > 0)
-        //	{
-        //		//Change year filter
-        //		try
-        //		{
-        //			int year = Convert.ToInt32(((System.Windows.Forms.TextBox)sender).Text);
+        private void ChangeFilter(object sender, EventArgs e)
+        {
+            if (sender is TextBox textbox && textbox.Text.Length > 0)
+            {
+                try
+                {
+                    // Parse the year input and update filters
+                    int year = Convert.ToInt32(textbox.Text);
+                    //TODO
+                    if (textbox.PlaceholderText.Contains("début"))
+                    {
+                        beginFilter = Math.Max(year, BEGINNINGYEAR); // Ensure it's within the allowed range
+                    }
+                    else if (textbox.PlaceholderText.Contains("fin"))
+                    {
+                        if (year > beginFilter)
+                        {
+                            endFilter = Math.Min(year, ENDINGYEAR);
+                        }
+                    }
 
-        //			textbox.ForeColor = Color.Black;
-        //			if (textbox.PlaceholderText.Contains("début"))
-        //			{
-        //				beginFilter = year;
-        //			}
-        //			else if (textbox.PlaceholderText.Contains("fin"))
-        //			{
-        //				endFilter = year;
-        //			}
+                    textbox.ForeColor = Color.Black;
+                }
+                catch
+                {
+                    textbox.ForeColor = Color.Red; // Indicates invalid input
+                }
 
-        //		}
-        //		catch { }
-        //		//In case char
-        //		StringBuilder text = new StringBuilder();
-        //		foreach (char item in textbox.Text)
-        //		{
-        //			try
-        //			{
-        //				if (Char.IsDigit(item))
-        //					text.Append(item.ToString());
-        //			}
-        //			catch { }
-        //		}
-        //		textbox.Text = text.ToString();
+                // Restrict endFilter to be after beginFilter
+                if (endFilter < beginFilter)
+                {
+                    endFilter = beginFilter;
+                }
 
-        //		//Update graph
-        //		formsPlot.Plot.Clear();
+                // Refresh the plot with the new filter
+                RefreshPlotWithFilters();
+            }
+        }
 
-        //		if (beginFilter < BEGINNINGYEAR)
-        //		{
-        //			beginFilter = BEGINNINGYEAR;
-        //		}
-        //		if (endFilter < beginFilter)
-        //		{
-        //			endFilter = ENDINGYEAR;
-        //		}
+        private void RefreshPlotWithFilters()
+        {
+            formsPlot.Plot.Clear();
 
-        //		(List<double> filteredX, List<double> filteredY) filtered = addPoint(headerTitle, beginFilter, endFilter);
+            foreach (var country in selectedCountries)
+            {
+                addPoint(country);
+            }
 
-        //		formsPlot.Plot.Add.Scatter(filtered.filteredX, filtered.filteredY);
-
-        //	}
-        //	formsPlot.Refresh();
-        //}
+            autoScalePlot(); // Adjust scaling to visible data
+            formsPlot.Refresh();
+        }
 
     }
 }
