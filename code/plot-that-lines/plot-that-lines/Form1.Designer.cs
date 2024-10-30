@@ -61,6 +61,7 @@ namespace plot_that_lines
             formsPlot.Plot.XLabel("Année");
             formsPlot.Plot.YLabel("Dépense militaire");
             formsPlot.Plot.Title("Aucun pays sélectionné");
+            formsPlot.Plot.ShowLegend();
             formsPlot.Plot.Axes.SetLimitsX(BEGINNINGYEAR - 5, ENDINGYEAR + 5);
 
             // explanation 
@@ -308,8 +309,8 @@ namespace plot_that_lines
                 formsPlot.Plot.Add.Scatter(
                     filteredConvertedPoints.Select(p => p.x).ToArray(),
                     filteredConvertedPoints.Select(p => p.y).ToArray()
-                );
-                formsPlot.Refresh();
+                ).LegendText = countryName;
+				formsPlot.Refresh();
             }
             else
             {
