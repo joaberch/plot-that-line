@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic.ApplicationServices;
+using ScottPlot.ArrowShapes;
 using ScottPlot.WinForms;
 using System.Diagnostics;
 using System.Globalization;
@@ -277,17 +278,30 @@ namespace plot_that_lines
         private async void addPoint(string countryName)
         {
             string inputCurrency = GetCurrencyForCountry(countryName);
-
             string convertToCurrency = comboBox.SelectedItem.ToString();
 
-            List<double> xPos = getYearData();
+			double rate;
+			try
+			{
+				rate = await getRate(inputCurrency, convertToCurrency);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Erreur lors de la récupération du taux de conversion. Utilisation de la devise locale.");
+				Debug.WriteLine(ex.ToString());
+				rate = 1; //Default value
+			}
+
+			List<double> xPos = getYearData();
             List<double> yPos = getCountryXPos(countryName, xPos.Count());
 
             List<(double X, double Y)> filteredPoints = xPos.Zip(yPos, (x, y) => (X: x, Y: y))
                 .Where(point => point.Y != 0 && point.X <= endFilter && point.X >= beginFilter)
                 .ToList();
 
-            List<(double x, double y)> filteredConvertedPoints = await ConvertCurrency(filteredPoints, inputCurrency, convertToCurrency);
+            List<(double x, double y)> filteredConvertedPoints = filteredPoints
+                .Select(point => (point.X, point.Y*rate))
+                .ToList();
 
             if (filteredConvertedPoints.Any())
             {
@@ -305,55 +319,39 @@ namespace plot_that_lines
         }
 
         /// <summary>
-        /// Convert value depending with the currency wanted
+        /// Fetch the rate to convert data in the currency wanted
         /// </summary>
-        /// <param name="points"></param>
         /// <param name="inputCurrency"></param>
         /// <param name="convertToCurrency"></param>
         /// <returns></returns>
-        static async Task<List<(double, double)>> ConvertCurrency(List<(double, double)> points, string inputCurrency, string convertToCurrency)
+        public async Task<double> getRate(string inputCurrency, string convertToCurrency)
         {
-            //TODO : only one request and then use the rate
-            string apiKey = "0";
-            StreamReader sr2 = new StreamReader(".env");
-            string line2;
-            List<(double x, double y)> convertedPoints = new List<(double x, double y)>();
+			string apiKey = "0";
+			using StreamReader sr = new StreamReader(ENVFILEPATH);
+			string line;
 
-            while ((line2 = sr2.ReadLine()) != null)
-            {
-                if (line2.Contains("APIKEY"))
-                {
-                    apiKey = line2.Split("=").Last();
-                }
-            }
+			while ((line = sr.ReadLine()) != null)
+			{
+				if (line.Contains("APIKEY"))
+				{
+					apiKey = line.Split("=").Last();
+				}
+			}
 
-            try
-            {
-                using var client = new HttpClient();
-                foreach (var point in points)
-                {
-                    string url = $"https://api.getgeoapi.com/v2/currency/convert?api_key={apiKey}&from={inputCurrency}&to={convertToCurrency}&amount={point.Item2}&format=json";
-                    var response = await client.GetAsync(url);
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseContent = await response.Content.ReadAsStringAsync();
-                        Debug.WriteLine($"Response : {responseContent}");
+			using var client = new HttpClient();
+			string url = $"https://api.getgeoapi.com/v2/currency/convert?api_key={apiKey}&from={inputCurrency}&to={convertToCurrency}&amount=1&format=json";
+			var response = await client.GetAsync(url);
 
-                        string key = "rate_for_amount\":\"";
-                        double rateForAmount = Convert.ToDouble(responseContent.Split(key)[1].Split("\"").First(), CultureInfo.InvariantCulture);
-                        double originalAmount = Convert.ToDouble(point.Item2.ToString("0.0", CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
-                        var value = rateForAmount * originalAmount;
-                        convertedPoints.Add((point.Item1, value));
-                    }
-                };
-                return convertedPoints;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Debug : {ex.ToString()}");
-            }
-            return convertedPoints;
-        }
+			if (response.IsSuccessStatusCode)
+			{
+				var responseContent = await response.Content.ReadAsStringAsync();
+				string key = "rate\":\"";
+				double rate = Convert.ToDouble(responseContent.Split(key)[1].Split("\"").First(), CultureInfo.InvariantCulture);
+				return rate;
+			}
+
+			throw new Exception("Failed to fetch conversion rate from API.");
+		}
 
         /// <summary>
         /// Scale the graph depending on the value displayed
